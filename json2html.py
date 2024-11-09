@@ -210,7 +210,7 @@ book = json.load(open('out/book.json'))
 # generate the html
 html = generate_book(book)
 
-# save the html to a file
-with open('book.html', 'w') as f:
+# save the html to a file as utf-8
+with open('out/book.html', 'w', encoding='utf-8') as f:
     f.write(html)
 

@@ -46,8 +46,9 @@ def read_book(path, book_name):
         # we get the text from the image as annotation data
         data = pytesseract.image_to_data(np_image, output_type=Output.DICT)
 
+        # we ned hungarian language for the OCR
         # we get the text from the image
-        page_text = pytesseract.image_to_string(np_image)
+        page_text = pytesseract.image_to_string(np_image, lang='hun')
 
         # we add the page to the book
         page = book['pages'].get(page_index, None)

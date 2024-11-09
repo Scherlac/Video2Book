@@ -14,7 +14,7 @@ def mp4toimages(path, out_folder):
     """Converts the mp4 file to jpg images and saves them to the out folder."""
 
     # we load the video file
-    cap = cv2.VideoCapture()
+    cap = cv2.VideoCapture(path)
 
     # we get the number of frames
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -66,7 +66,7 @@ def mp4toimages(path, out_folder):
         prev_gray = gray
 
         # we write the mean of the difference between the frames to log file
-        msg = f'frame: {i}, change: {frame_mean_change}, std dev: {S}'
+        msg = f'\rframe: {i}, change: {frame_mean_change}, std dev: {S}'
         log_file.write(msg + '\n')
         print(msg)
 
@@ -79,11 +79,11 @@ def mp4toimages(path, out_folder):
         S = np.sqrt(Q / k)
 
         # if the mean is greater than a threshold, we trigger the saving of the frame
-        if frame_mean_change > 5:
+        if frame_mean_change > 1.5*S:
             M = M + 1
 
         # we save the frame to file if M is larger than MM and the mean is small so we have a stable video    
-        if M > MM and frame_mean_change < 0.0001:
+        if M > MM and frame_mean_change < 0.4 * S:
             cv2.imwrite(f'{out_folder}/img_{M:05d}.jpg', frame)
             MM = M
 
@@ -94,7 +94,7 @@ def mp4toimages(path, out_folder):
 log_file = open('log.txt', 'w')
 
 
-mp4toimages('2023-11-21_14h18_21.mp4', 'out')
+mp4toimages('WP_20231226_12_03_50_Pro.mp4', 'out')
 
 # we close the log file
 log_file.close()
