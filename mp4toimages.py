@@ -5,11 +5,6 @@
 
 import cv2
 import numpy as np
-import os
-import sys
-import time
-import datetime
-
 
 def detect_content(ver_std):
     # threshold for the std deviation

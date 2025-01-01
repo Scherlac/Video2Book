@@ -2,10 +2,8 @@
 #%pip install fpdf
 #%pip install Pillow
 
-
 import os
 import glob
-import sys
 from PIL import Image
 from fpdf import FPDF
 

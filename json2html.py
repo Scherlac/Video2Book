@@ -4,16 +4,7 @@
 # we show a single page at a time
 # we show controls to navigate to the next and previous page
 
-#%pip install pytesseract
-#%pip install tesseract-ocr
-#%pip install opencv-python
-#%pip install numpy
-#%pip install Pillow
-
 import os
-import PIL
-import numpy as np
-# html template library
 from string import Template
 import json
 

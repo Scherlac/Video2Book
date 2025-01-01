@@ -1,9 +1,5 @@
-
 # we will find the text paragraphs on the image and extract them using pytesseract
 #%pip install pytesseract
-
-# install tesseract from internet
-#% pip install tesseract-ocr
 
 import os
 import PIL

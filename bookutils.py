@@ -1,22 +1,9 @@
 import os
 import sys
-import time
-import datetime
-import cv2
-import numpy as np
-import pytesseract
-from pytesseract import Output
-import PIL
-from string import Template
-import json
-from fpdf import FPDF
-from PIL import Image
-
 import mp4toimages
 import images2pdf
 import images2json
 import json2html
-
 
 # main function
 def main():
