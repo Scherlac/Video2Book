@@ -17,7 +17,7 @@ import re
 os.environ['PATH'] += ';C:\\Program Files\\Tesseract-OCR'
 
 
-def read_book(path, book_name):
+def read_book(path, book_file, lang='eng'):
     """Reads the book from the given path and stores it in the given file name."""
 
     # We load the images from the out folder with the jpg extension
@@ -48,7 +48,7 @@ def read_book(path, book_name):
 
         # we ned hungarian language for the OCR
         # we get the text from the image
-        page_text = pytesseract.image_to_string(np_image, lang='hun')
+        page_text = pytesseract.image_to_string(np_image, lang=lang)
 
         # we add the page to the book
         page = book['pages'].get(page_index, None)
@@ -133,14 +133,9 @@ def read_book(path, book_name):
             line['text'] = re.sub('\s+', ' ', line['text'])
 
     # write book to file
-    with open(os.path.join(path, book_name), 'w') as f:
+    with open(book_file, 'w') as f:
         # we write the book to the file indented with 4 spaces
         json.dump(book, f, indent=4)
 
     return book
-
-
-
-# we read the book
-book = read_book("out", "book.json")
 

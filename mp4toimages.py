@@ -10,6 +10,46 @@ import sys
 import time
 import datetime
 
+
+def detect_content(ver_std):
+    # threshold for the std deviation
+    mean_ver_str = np.mean(ver_std)
+    std_ver_str = np.std(ver_std)
+
+    hi = np.array(ver_std > mean_ver_str)
+    ver = np.array(ver_std)
+    hi_mean = np.mean(ver[hi])
+    hi_std = np.std(ver[hi])
+    low_mean = np.mean(ver[~hi])
+    low_std = np.std(ver[~hi])
+
+    hi = np.array(ver_std > (low_mean + 3*low_std))
+
+    # we detect the range of the strip with high std deviation
+    with open('content.dat', 'w') as f:
+        print(ver_std, file=f)
+
+    # the range of the strip with high std deviation
+    min_x = np.min(np.where(hi))
+    max_x = np.max(np.where(hi))
+
+    return min_x, max_x
+
+
+def collect_content(gray, width):
+    """
+    Detects the content of the image by calculating the standard deviation of the vertical strips of the image.
+    """
+    ver_std = []
+    ver_mean = []
+    # check 10px width vertical strips on the image and calculate the std deviation
+    for x in range(0, width, 10):
+        strip = gray[:, x:x+10]
+        std = 255 - np.mean(strip)
+        ver_std.append(std)
+
+    return np.array(ver_std)
+
 def mp4toimages(path, out_folder):
     """Converts the mp4 file to jpg images and saves them to the out folder."""
 
@@ -45,6 +85,7 @@ def mp4toimages(path, out_folder):
     MM = 0
     prev_gray = None
 
+    first_frame = True
 
     # for each frame we process it
     for i in range(frame_count):
@@ -57,6 +98,7 @@ def mp4toimages(path, out_folder):
             prev_gray = gray
             continue
 
+
         # we get the difference between the current frame and the previous one
         diff = cv2.absdiff(gray, prev_gray)
         # we get the mean of the difference
@@ -67,7 +109,7 @@ def mp4toimages(path, out_folder):
 
         # we write the mean of the difference between the frames to log file
         msg = f'\rframe: {i}, change: {frame_mean_change}, std dev: {S}'
-        log_file.write(msg + '\n')
+        # log_file.write(msg + '\n')
         print(msg)
 
 
@@ -87,15 +129,17 @@ def mp4toimages(path, out_folder):
             cv2.imwrite(f'{out_folder}/img_{M:05d}.jpg', frame)
             MM = M
 
+            ver_std = collect_content(gray, width)
+
+            if first_frame:
+                average_ver = ver_std
+                first_frame = False
+            else:
+                average_ver = (average_ver * 0.99 + ver_std * 0.01)
 
 
+    average_min_x, average_max_x = detect_content(average_ver)
 
-# we open the log file
-log_file = open('log.txt', 'w')
+    print(f"min_x: {average_min_x}, max_x: {average_max_x}")
 
-
-mp4toimages('WP_20231226_12_03_50_Pro.mp4', 'out')
-
-# we close the log file
-log_file.close()
 

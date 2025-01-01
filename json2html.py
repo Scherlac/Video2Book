@@ -204,13 +204,23 @@ def generate_book(book):
     return html
 
 
-# load the book
-book = json.load(open('out/book.json'))
+def generate_html(
+    output_folder,
+    book_file
+    ):
 
-# generate the html
-html = generate_book(book)
+    # we create the output folder if it does not exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
-# save the html to a file as utf-8
-with open('out/book.html', 'w', encoding='utf-8') as f:
-    f.write(html)
+    with open(book_file, 'r') as f:
+        # load the book
+        book = json.load(f)
+
+    # generate the html
+    html = generate_book(book)
+
+    # save the html to a file as utf-8
+    with open(os.path.join(output_folder, 'book.html'), 'w', encoding='utf-8') as f:
+        f.write(html)
 
