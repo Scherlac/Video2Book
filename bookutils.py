@@ -7,7 +7,7 @@ import json2html
 import argparse
 
 # main function
-def convert(path, crop_x=None, crop_y=None):
+def convert(path, crop_x=None, crop_y=None, lang='eng', suffix='output'):
     # """The main function of the program."""
 
     # # we get the mp4 file path from the command line
@@ -27,7 +27,7 @@ def convert(path, crop_x=None, crop_y=None):
     folder = os.path.dirname(path)
 
     # output folder
-    out_folder = os.path.join(folder, name)
+    out_folder = os.path.join(folder, f"{name}_{suffix}")
 
     # ensure the output folder exists
     if not os.path.exists(out_folder):
@@ -41,7 +41,7 @@ def convert(path, crop_x=None, crop_y=None):
         os.makedirs(raw_image_folder)
 
     # image folder name
-    image_folder =  os.path.join(folder, name, "out")
+    image_folder =  os.path.join(folder, name, "html")
 
     # ensure the image folder exists
     if not os.path.exists(image_folder):
@@ -65,7 +65,7 @@ def convert(path, crop_x=None, crop_y=None):
     book_file = os.path.join(out_folder, f"{name}.json")
 
     # we read the book from the images
-    book = images2json.read_book(image_folder, book_file, lang='eng')
+    book = images2json.read_book(image_folder, book_file, lang=lang)
 
     # we generate html from the book and save it to a file
     json2html.generate_html(image_folder, book_file)
@@ -80,9 +80,10 @@ if __name__ == "__main__":
     parser.add_argument('--crop-x', nargs=2, type=int, help='The crop values for x.', default=None)
     parser.add_argument('--crop-y', nargs=2, type=int, help='The crop values for y.', default=None)
     # default language is english
-    parser.add_argument('--lang', help='The language of the book.', default='eng')
+    parser.add_argument('--lang', help='The language of the book. Default is \'eng\'.', default='eng')
+    parser.add_argument('--suffix', help='The suffix for the output folder.', default='output')
     args = parser.parse_args()
 
-    convert(args.file, args.crop_x, args.crop_y)
+    convert(args.file, args.crop_x, args.crop_y, args.lang, args.suffix)
 
 

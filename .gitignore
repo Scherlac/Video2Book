@@ -181,3 +181,10 @@ cython_debug/
 *.mov
 *.wmv
 *.mkv
+*.pdf
+
+# Avoid committing book output files / folders
+*_output
+
+# Avoid committing debug files
+content.dat

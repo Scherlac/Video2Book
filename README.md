@@ -25,7 +25,7 @@ python -m bookutils.py --file <video_file> [--crop-x crop_x1 crop_x2] [--crop-y 
 - [ ] Extract diagams from the images
 - [ ] Skip diagrams when extracting text
 - [ ] Create html with formated text and diagrams instead of just images with aligned texts
-
+- [ ] Fix crop auto detection 
 
 ## License
 
