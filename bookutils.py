@@ -1,21 +1,22 @@
+#!/usr/bin/env python3
 import os
-import sys
 import mp4toimages
 import images2pdf
 import images2json
 import json2html
+import argparse
 
 # main function
-def main():
-    """The main function of the program."""
+def convert(path, crop_x=None, crop_y=None):
+    # """The main function of the program."""
 
-    # we get the mp4 file path from the command line
-    path = sys.argv[1]
+    # # we get the mp4 file path from the command line
+    # path = sys.argv[1]
 
-    # manual crop values
-    # TODO: automate the crop values and/or make them configurable
-    crop_x = None # [80, 900]
-    crop_y = None # [40, 1070]
+    # # manual crop values
+    # # TODO: automate the crop values and/or make them configurable
+    # crop_x = None # [80, 900]
+    # crop_y = None # [40, 1070]
 
     # we get the name of the video file
     file_name = os.path.basename(path)
@@ -69,4 +70,19 @@ def main():
     # we generate html from the book and save it to a file
     json2html.generate_html(image_folder, book_file)
 
-    
+
+if __name__ == "__main__":
+
+    # we get parameters from the command line using argparse
+    parser = argparse.ArgumentParser(description='Convert a video to a pdf book.')
+    parser.add_argument('--file', required=True, help='The path to the video file.', type=str)
+    # define the crop values is None
+    parser.add_argument('--crop-x', nargs=2, type=int, help='The crop values for x.', default=None)
+    parser.add_argument('--crop-y', nargs=2, type=int, help='The crop values for y.', default=None)
+    # default language is english
+    parser.add_argument('--lang', help='The language of the book.', default='eng')
+    args = parser.parse_args()
+
+    convert(args.file, args.crop_x, args.crop_y)
+
+
