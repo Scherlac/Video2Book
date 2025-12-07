@@ -4,8 +4,25 @@ This is a simple tool to convert a video to a book. It uses the opencv library t
 
 ## Installation
 
-1. Clone the repository
-2. Install the required libraries using the following command:
+1. Ensure you have Python 3.10+ installed.
+
+2. Activate the virtual environment:
+```bash
+source ~/code/.venv/bin/activate
+```
+
+3. Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Install Tesseract OCR (required for text extraction):
+```bash
+sudo apt update
+sudo apt install tesseract-ocr tesseract-ocr-eng
+```
+
+5. (Optional) If using conda instead of venv, you can create the environment with:
 ```bash
 conda env create -f env.yml
 conda activate video2book

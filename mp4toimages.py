@@ -6,20 +6,36 @@
 import cv2
 import numpy as np
 
-def detect_content(ver_std):
+def detect_content(ver_std, ver_mean, std_threshold=1.2):
     # threshold for the std deviation
     mean_ver_str = np.mean(ver_std)
     std_ver_str = np.std(ver_std)
+    mean_ver_mean = np.mean(ver_mean)
+    std_ver_mean = np.std(ver_mean)
 
-    hi = np.array(ver_std > mean_ver_str)
-    ver = np.array(ver_std)
-    hi_mean = np.mean(ver[hi])
-    hi_std = np.std(ver[hi])
-    low_mean = np.mean(ver[~hi])
-    low_std = np.std(ver[~hi])
+    # create a plot to visualize the ver_std and ver_mean
+    # also plot the mean and std deviation lines
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(12, 6))
+    plt.plot(ver_std, label='Vertical Std Deviation')
+    plt.plot(ver_mean, label='Vertical Mean', color='orange')
+    plt.axhline(mean_ver_str, color='red', linestyle='--', label='Mean Std Dev')
+    plt.axhline(mean_ver_str + std_ver_str, color='green', linestyle='--', label='Mean + 1 Std Dev')
+    plt.axhline(mean_ver_str - std_ver_str, color='green', linestyle='--', label='Mean - 1 Std Dev')
+    plt.axhline(mean_ver_mean, color='purple', linestyle='--', label='Mean Mean')
+    plt.axhline(mean_ver_mean + std_ver_mean, color='brown', linestyle='--', label='Mean Mean + 1 Std Dev')
+    plt.axhline(mean_ver_mean - std_ver_mean, color='brown', linestyle='--', label='Mean Mean - 1 Std Dev')
+    plt.legend()
+    plt.title('Vertical Standard Deviation and Mean of Image Strips')
+    plt.xlabel('Strip Index')
+    plt.ylabel('Value')
+    plt.grid()
+    plt.savefig('vertical_std_mean.png')
+    plt.close()
 
-    hi = np.array(ver_std > (low_mean + 3*low_std))
-
+    hi = np.array( np.abs(ver_std - mean_ver_str) > std_threshold * std_ver_str )
+    hi2 = np.array( np.abs(ver_mean - mean_ver_mean) > std_threshold * std_ver_mean )
+    hi = hi | hi2
     # we detect the range of the strip with high std deviation
     with open('content.dat', 'w') as f:
         print(ver_std, file=f)
@@ -40,12 +56,14 @@ def collect_content(gray, width):
     # check 10px width vertical strips on the image and calculate the std deviation
     for x in range(0, width, 10):
         strip = gray[:, x:x+10]
-        std = 255 - np.mean(strip)
+        std = 255 - np.std(strip)
+        mean = 255 - np.mean(strip)
         ver_std.append(std)
+        ver_mean.append(mean)
 
-    return np.array(ver_std)
+    return np.array(ver_std), np.array(ver_mean)
 
-def mp4toimages(path, out_folder):
+def mp4toimages(path, out_folder, std_threshold=1.2):
     """Converts the mp4 file to jpg images and saves them to the out folder."""
 
     # we load the video file
@@ -124,16 +142,19 @@ def mp4toimages(path, out_folder):
             cv2.imwrite(f'{out_folder}/img_{M:05d}.jpg', frame)
             MM = M
 
-            ver_std = collect_content(gray, width)
+            ver_std, ver_mean = collect_content(gray, width)
 
             if first_frame:
                 average_ver = ver_std
+                average_mean = ver_mean
                 first_frame = False
+
             else:
                 average_ver = (average_ver * 0.99 + ver_std * 0.01)
+                average_mean = (average_mean * 0.99 + ver_mean * 0.01)
 
 
-    average_min_x, average_max_x = detect_content(average_ver)
+    average_min_x, average_max_x = detect_content(average_ver, average_mean, std_threshold=std_threshold)
 
     print(f"min_x: {average_min_x}, max_x: {average_max_x}")
 

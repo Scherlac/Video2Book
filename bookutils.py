@@ -7,7 +7,7 @@ import json2html
 import argparse
 
 # main function
-def convert(path, crop_x=None, crop_y=None, lang='eng', suffix='output'):
+def convert(path, crop_x=None, crop_y=None, lang='eng', suffix='output', std_threshold=1.2):
     # """The main function of the program."""
 
     # # we get the mp4 file path from the command line
@@ -48,7 +48,7 @@ def convert(path, crop_x=None, crop_y=None, lang='eng', suffix='output'):
         os.makedirs(image_folder)
 
     # we convert the mp4 file to images
-    mp4toimages.mp4toimages(path, raw_image_folder)
+    mp4toimages.mp4toimages(path, raw_image_folder, std_threshold=std_threshold)
 
     
 
@@ -76,6 +76,8 @@ if __name__ == "__main__":
     # we get parameters from the command line using argparse
     parser = argparse.ArgumentParser(description='Convert a video to a pdf book.')
     parser.add_argument('--file', required=True, help='The path to the video file.', type=str)
+    # detection std threshold factor
+    parser.add_argument('--std-threshold', type=float, help='The standard deviation threshold factor for detection.', default=1.2)
     # define the crop values is None
     parser.add_argument('--crop-x', nargs=2, type=int, help='The crop values for x.', default=None)
     parser.add_argument('--crop-y', nargs=2, type=int, help='The crop values for y.', default=None)
@@ -84,6 +86,6 @@ if __name__ == "__main__":
     parser.add_argument('--suffix', help='The suffix for the output folder.', default='output')
     args = parser.parse_args()
 
-    convert(args.file, args.crop_x, args.crop_y, args.lang, args.suffix)
+    convert(args.file, args.crop_x, args.crop_y, args.lang, args.suffix, args.std_threshold)
 
 
